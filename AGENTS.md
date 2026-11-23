@@ -19,6 +19,16 @@ curl -x socks5h://127.0.0.1:1080 https://api.telegram.org -I
 python3 -m py_compile update-sub.py                # quick syntax check
 ```
 
+### Release (CI)
+
+`.github/workflows/release.yml` builds and pushes the image to GHCR. It is triggered only by pushing a semver tag `vX.Y.Z`, and the tagged commit must be on `main` (the job fails otherwise):
+
+```bash
+git tag v1.2.3 && git push origin v1.2.3   # -> ghcr.io/<owner>/<repo>:1.2.3, :1.2, :latest
+```
+
+Auth uses the built-in `GITHUB_TOKEN`; no secrets to configure.
+
 `update-sub.py` hardcodes `/etc/xray` paths and expects the `xray` binary on PATH, so it is meant to run inside the container, not on the host.
 
 ## Architecture / invariants that span files
