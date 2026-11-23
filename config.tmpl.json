@@ -1,0 +1,36 @@
+// xray config template. update-sub fills in {{...}} from the first vless:// (reality+tcp) in the subscription
+// and writes the result to /etc/xray/config.json; make your edits here.
+{
+  "log": { "loglevel": "warning", "access": "none" },
+  "inbounds": [
+    // http-in on 3128 is used by update-sub itself to check the tunnel; do not change the port
+    { "tag": "http-in",  "listen": "0.0.0.0", "port": 3128, "protocol": "http",  "settings": {} },
+    { "tag": "socks-in", "listen": "0.0.0.0", "port": 1080, "protocol": "socks", "settings": { "udp": true } }
+  ],
+  "outbounds": [
+    {
+      "tag": "vless-reality",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "{{ADDRESS}}",
+            "port": {{PORT}},
+            "users": [ { "id": "{{UUID}}", "flow": "{{FLOW}}", "encryption": "none" } ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "{{SNI}}",
+          "fingerprint": "{{FP}}",
+          "publicKey": "{{PBK}}",
+          "shortId": "{{SID}}",
+          "spiderX": "{{SPX}}"
+        }
+      }
+    }
+  ]
+}

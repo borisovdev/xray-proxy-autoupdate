@@ -1,0 +1,32 @@
+# WARNING: DO NOT USE IN PRODUCTION.
+# This compose file is an example for personal/local use only. It comes with
+# no guarantees of security, stability or support. Review and adapt it before
+# running it anywhere that matters.
+
+services:
+  xray-proxy:
+    build: .
+    image: xray-proxy-autoupdate:latest
+    container_name: xray-proxy
+    restart: always
+    init: true
+    environment:
+      TZ: "Europe/Moscow"
+      UPDATE_INTERVAL: "3600"
+      CHECK_HOST: api.telegram.org
+    ports:
+      - "127.0.0.1:1080:1080"
+      - "127.0.0.1:3128:3128"
+    volumes:
+      - xray_data:/etc/xray
+      - ./config.tmpl.json:/etc/xray/config.tmpl.json:ro
+      - ./subscription.env:/etc/xray/subscription.env:ro
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/update-sub", "check"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  xray_data:
